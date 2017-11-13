@@ -44,21 +44,25 @@ void init()
 	}
 }
 
+//mm
 void increment_CI()
 {
 
 }
 
+//mf
 void fetch()
 {
 
 }
 
+//mf
 void decode()
 {
 
 }
 
+//mm
 void execute()
 {
 

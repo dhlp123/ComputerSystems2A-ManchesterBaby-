@@ -1,18 +1,15 @@
 #include <iostream>
+#include <vector>
+#include "assembler.h"
+#include "instruction.h"
 
 using namespace std;
 
-int p_Instruction[32];
-int c_Instruction[32];
-int accumulator[32];
-int store[32][32];
+Instruction accumulator;
+Instruction p_Instruction;
+Instruction c_Instruction;
+vector<Instruction> store(32);
 
-void increment_CI();
-void fetch();
-void decode();
-void execute();
-void display();
-void init();
 
 int main()
 {
@@ -36,11 +33,12 @@ int main()
 
 void init()
 {
-	for(int i = 0; i < 32; i++)
+	for (int j=0; j < 32; j++)
 	{
-		c_Instruction[i] = 0;
-		p_Instruction[i] = 0;
-		accumulator[i] = 0;
+		store[j].setBinary("00000000000000000000000000000000");
+		c_Instruction.setBinary("00000000000000000000000000000000");
+		p_Instruction.setBinary("00000000000000000000000000000000");
+		accumulator.setBinary("00000000000000000000000000000000");
 	}
 }
 
@@ -56,6 +54,7 @@ void fetch()
 
 }
 
+
 //mf
 void decode()
 {
@@ -70,20 +69,16 @@ void execute()
 
 void display()
 {
-	for(int i = 0; i < 32; i++)
-	{
+
 		for(int j = 0; j < 32; j++)
 		{
-			if(store[i][j] == 1)
-				cout << "1 ";
-			else
-				cout << "0 ";
+			cout << store[j].getBinary() << endl;
 		}
 		cout << endl;
-	}
+	
 
-	cout << "accumulator: " << endl;
-	cout << "control insturction: " << endl;
-	cout << "present insturction: " << endl;
+	cout << "accumulator: " << accumulator.getBinary() << endl;
+	cout << "control insturction: " << c_Instruction.getBinary() << endl;
+	cout << "present insturction: " << p_Instruction.getBinary() << endl;
 }
 

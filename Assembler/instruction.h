@@ -27,6 +27,11 @@ void Instruction::setBinary(string line)
 
 string Instruction::getBinary()
 {
+	//first 3
 	return this->binary;
 }
 
+string Instruction::getOpCode()
+{
+	return this->OpCode;
+}

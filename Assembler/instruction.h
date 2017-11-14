@@ -8,11 +8,17 @@ class Instruction {
 	int data;
 
 	public:
+		Instruction();
 		string getOpCode();
 		string getdata();
 		void setBinary(string line);
 		string getBinary();
 };
+
+Instruction::Instruction()
+{
+	this->binary = "";
+}
 
 void Instruction::setBinary(string line)
 {

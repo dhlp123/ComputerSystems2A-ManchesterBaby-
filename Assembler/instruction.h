@@ -4,13 +4,11 @@ using std::string;
 
 class Instruction {
 	string binary;
-	string OpCode;
-	int data;
 
 	public:
 		Instruction();
 		string getOpCode();
-		string getdata();
+		string getData();
 		void setBinary(string line);
 		string getBinary();
 };
@@ -27,11 +25,7 @@ void Instruction::setBinary(string line)
 
 string Instruction::getBinary()
 {
-	//first 3
 	return this->binary;
 }
 
-string Instruction::getOpCode()
-{
-	return this->OpCode;
-}
+

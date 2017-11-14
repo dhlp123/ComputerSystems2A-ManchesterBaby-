@@ -1,7 +1,7 @@
 void increment_CI();
-void fetch();
-void decode();
+std::string fetch();
+void decode(std::string);
 void execute();
 void display();
 void init();
-int binToInt(int[]);
+int binToInt(std::string);

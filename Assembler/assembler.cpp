@@ -13,23 +13,24 @@ Instruction c_Instruction;
 vector<Instruction> store(32);
 
 
+
 int main()
 {
-	cout << "start" << endl;
+
 	init();
 	
 	bool finish = false;
 	
-	//while(!finish)
-	//{
+	for(int i=0; i < 10; i++)
+	{
 		increment_CI();
-		fetch();
-		decode();
+		string current = fetch();
+		decode(current);
 		execute();
 		display();
-	//}
+	}
 	
-	cout << "end" << endl;
+	
 	return 0;
 }
 
@@ -66,52 +67,54 @@ void increment_CI()
 }
 
 //mf
-void fetch()
+string fetch()
 {
-	//convert c_instruction to decimal
-	//int CI_decimal = ...
-	//store[CI_decimal].getBinary()
-	//return CI_instruction
+	int CI_decimal = binToInt(c_Instruction.getBinary());
+	
+	return store[CI_decimal].getBinary();
 }
 
 
 //mf
-void decode()
+void decode(string current)
 {
-	//string opCode = CI_instruction.getOpCode()
-	//CI_instruction.getData()
-	//
-	//switch(opCode) {
-	//	case "VAR":
-	// 		do something
-	// 		break;
-	//	case "LDN":
-	//		do something
-	//	default:
-		// 	cout << "Error reading file" << endl;
-		// 	exit(1);
-		// 	break;
-		// }
-	//}
+	string opCode = current.substr(14, 3);
+	string data = current.substr(0, 5);
+
+	cout << endl << "opCode: " << opCode << endl;
+	cout << "data: " << data << endl;
+
+	if(opCode == "000")
+		cout << "JMP" << endl;
+	else if(opCode == "100")
+		cout << "JRP" << endl;
+	else if(opCode == "010")
+		cout << "LDN" << endl;
+	else if(opCode == "110")
+		cout << "STO" << endl;
+	else if(opCode == "001")
+		cout << "SUB" << endl;
+	else if(opCode == "101")
+		cout << "SUB" << endl;
+	else if(opCode == "011")
+		cout << "CMP" << endl;
+	else if(opCode == "111")
+		cout << "STP" << endl;
+	else
+	{
+		cout << "Unable to read file. Exiting..." << endl;
+		exit(1);
+	}
 
 
 
+	
+}
 
-// 	; THIS PROGRAM ADDS TWO NUMBERS TOGETHER
-// ; The program starts at address 1, so we need to pad out address 0 
-//           VAR 0       ; Declare 32-bit variable to fill space 
-// START:    LDN NUM01   ; Copy variable to accumulator (negated)
-//           SUB NUM02   ; Subtract variable from accumulator to get sum (negated)
-//           STO MYSUM   ; Store accumulator to variable - saves answer
-// ; The next two instructions negate the stored answer
-//           LDN MYSUM   ; Copy variable to accumulator (negated)
-//           STO MYSUM   ; Store accumulator to variable
-// END:      STP         ; Stop processor
-// ; Variable declarations follow
-// NUM01:    VAR 1025    ; Declare 32-bit variable
-// NUM02:    VAR 621     ; Declare 32-bit variable
-// MYSUM:    VAR 0       ; Declare 32-bit variable
-
+//Converts a binary string to an int
+int binToInt(string binary)
+{
+	return 0;
 }
 
 //mm
@@ -123,16 +126,19 @@ void execute()
 void display()
 {
    
-   		int x=0;
-		while(store[x].getBinary() != "")
-		{
-			cout << store[x].getBinary() << endl;
-			x++;
-		}
+	int x=0;
+	while(store[x].getBinary() != "")
+	{
+		cout << store[x].getBinary() << endl;
+		x++;
+	}
 	
 	cout << endl;
 	cout << "accumulator: " << accumulator.getBinary() << endl;
 	cout << "control insturction: " << c_Instruction.getBinary() << endl;
 	cout << "present insturction: " << p_Instruction.getBinary() << endl;
+
+	cout << endl << "data: " << p_Instruction.getData() << endl;
+	cout << "opcode: " << p_Instruction.getOpCode() << endl;
 }
 

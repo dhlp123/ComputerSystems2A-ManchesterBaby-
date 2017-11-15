@@ -28,4 +28,14 @@ string Instruction::getBinary()
 	return this->binary;
 }
 
+string Instruction::getOpCode()
+{
+	return this->binary.substr(14, 3);
+}
+
+string Instruction::getData()
+{
+	return this->binary.substr(0, 5);
+}
+
 

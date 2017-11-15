@@ -1,9 +1,10 @@
 #include <string>
-#include <bitset>
+#include <stdlib.h>
 
+using namespace std;
 
-void readCode();
-void translateCodeToBinary();
-void translateBinaryToLine();
-void writeLine();
+void readCode(string fileName);
+void translateCodeToBinary(string opCode, int num);
+void translateBinaryToLine(string num, string opCode);
+void writeMachineCode(string line);
 

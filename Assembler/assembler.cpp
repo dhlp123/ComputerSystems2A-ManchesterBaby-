@@ -1,64 +1,123 @@
 #include <iostream>
+#include <vector>
+#include <fstream>
+
+#include "assembler.h"
+#include "instruction.h"
 
 using namespace std;
 
-int p_Instruction[32];
-int c_Instruction[32];
-int accumulator[32];
-int store[32][32];
+Instruction accumulator;
+Instruction p_Instruction;
+Instruction c_Instruction;
+vector<Instruction> store(32);
 
-void increment_CI();
-void fetch();
-void decode();
-void execute();
-void display();
-void init();
+
 
 int main()
 {
-	cout << "start" << endl;
+
 	init();
 	
 	bool finish = false;
 	
-	//while(!finish)
-	//{
+	for(int i=0; i < 10; i++)
+	{
 		increment_CI();
-		fetch();
-		decode();
+		string current = fetch();
+		decode(current);
 		execute();
 		display();
-	//}
+	}
 	
-	cout << "end" << endl;
+	
 	return 0;
 }
 
 void init()
 {
-	for(int i = 0; i < 32; i++)
+	ifstream file("testfile");
+	if(!file)
 	{
-		c_Instruction[i] = 0;
-		p_Instruction[i] = 0;
-		accumulator[i] = 0;
+		cout << "Unable to open file" << endl;
+		exit(1);
+	}
+
+	int x = 0;
+	string line;
+	while(getline(file, line))
+	{
+		store[x].setBinary(line);
+		x++;
+	}
+
+
+	for (int j=0; j < 32; j++)
+	{
+		c_Instruction.setBinary("00000000000000000000000000000000");
+		p_Instruction.setBinary("00000000000000000000000000000000");
+		accumulator.setBinary("00000000000000000000000000000000");
 	}
 }
 
+//mm
 void increment_CI()
 {
 
 }
 
-void fetch()
+//mf
+string fetch()
 {
-
+	int CI_decimal = binToInt(c_Instruction.getBinary());
+	
+	return store[CI_decimal].getBinary();
 }
 
-void decode()
-{
 
+//mf
+void decode(string current)
+{
+	string opCode = current.substr(14, 3);
+	string data = current.substr(0, 5);
+
+	cout << endl << "opCode: " << opCode << endl;
+	cout << "data: " << data << endl;
+
+	if(opCode == "000")
+		cout << "JMP" << endl;
+	else if(opCode == "100")
+		cout << "JRP" << endl;
+	else if(opCode == "010")
+		cout << "LDN" << endl;
+	else if(opCode == "110")
+		cout << "STO" << endl;
+	else if(opCode == "001")
+		cout << "SUB" << endl;
+	else if(opCode == "101")
+		cout << "SUB" << endl;
+	else if(opCode == "011")
+		cout << "CMP" << endl;
+	else if(opCode == "111")
+		cout << "STP" << endl;
+	else
+	{
+		cout << "Unable to read file. Exiting..." << endl;
+		exit(1);
+	}
+
+
+
+	
 }
 
+//Converts a binary string to an int
+int binToInt(string binary)
+{
+	return 0;
+}
+
+//mm
 void execute()
 {
 
@@ -66,20 +125,20 @@ void execute()
 
 void display()
 {
-	for(int i = 0; i < 32; i++)
+   
+	int x=0;
+	while(store[x].getBinary() != "")
 	{
-		for(int j = 0; j < 32; j++)
-		{
-			if(store[i][j] == 1)
-				cout << "1 ";
-			else
-				cout << "0 ";
-		}
-		cout << endl;
+		cout << store[x].getBinary() << endl;
+		x++;
 	}
+	
+	cout << endl;
+	cout << "accumulator: " << accumulator.getBinary() << endl;
+	cout << "control insturction: " << c_Instruction.getBinary() << endl;
+	cout << "present insturction: " << p_Instruction.getBinary() << endl;
 
-	cout << "accumulator: " << endl;
-	cout << "control insturction: " << endl;
-	cout << "present insturction: " << endl;
+	cout << endl << "data: " << p_Instruction.getData() << endl;
+	cout << "opcode: " << p_Instruction.getOpCode() << endl;
 }
 

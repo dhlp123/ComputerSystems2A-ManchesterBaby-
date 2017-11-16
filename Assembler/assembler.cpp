@@ -12,21 +12,16 @@ Instruction p_Instruction;
 Instruction c_Instruction;
 vector<Instruction> store(32);
 
-
-
 int main()
 {
-
 	init();
 	
-	bool finish = false;
-	
-	for(int i=0; i < 10; i++)
+	for(int i=0; i < 10; i++)		//TODO: needs change based on file sizes
 	{
 		increment_CI();
 		string current = fetch();
 		decode(current);
-		execute();
+		//execute();				//called from decode
 		display();
 	}
 	
@@ -36,7 +31,7 @@ int main()
 
 void init()
 {
-	ifstream file("testfile");
+	ifstream file("testfile");			//TODO: check how file will be read and modify accordingly
 	if(!file)
 	{
 		cout << "Unable to open file" << endl;
@@ -85,24 +80,24 @@ void decode(string current)
 	cout << "data: " << data << endl;
 
 	if(opCode == "000")
-		cout << "JMP" << endl;
+		execute("JMP", 0);
 	else if(opCode == "100")
-		cout << "JRP" << endl;
+		execute("JRP", 0);
 	else if(opCode == "010")
-		cout << "LDN" << endl;
+		execute("LDN", 0);
 	else if(opCode == "110")
-		cout << "STO" << endl;
+		execute("STO", 0);
 	else if(opCode == "001")
-		cout << "SUB" << endl;
+		execute("SUB", 0);
 	else if(opCode == "101")
-		cout << "SUB" << endl;
+		execute("SUB", 0);
 	else if(opCode == "011")
-		cout << "CMP" << endl;
+		execute("CMP", 0);
 	else if(opCode == "111")
-		cout << "STP" << endl;
+		execute("STP", 0);
 	else
 	{
-		cout << "Unable to read file. Exiting..." << endl;
+		cout << "Unable to read command. Exiting..." << endl;
 		exit(1);
 	}
 
@@ -114,13 +109,15 @@ void decode(string current)
 //Converts a binary string to an int
 int binToInt(string binary)
 {
+	cout << "binToInt call..." << binary << endl;
 	return 0;
 }
 
 //mm
-void execute()
+void execute(string opCode, int operand)
 {
-
+	cout << "Opcode: " << opCode << endl;
+	cout << "Operand: " << operand << endl;
 }
 
 void display()

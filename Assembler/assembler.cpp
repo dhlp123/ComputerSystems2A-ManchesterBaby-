@@ -17,6 +17,7 @@ vector<Instruction> store;
 
 int main()
 {
+
 	init();
 	
 	for(unsigned int i=0; i < store.size(); i++)	//TODO: needs change based on file sizes
@@ -56,6 +57,7 @@ void init()
 		p_Instruction.setBinary("00000000000000000000000000000000");
 		accumulator.setBinary("00000000000000000000000000000000");
 	}
+	file.close();
 }
 
 //mm
@@ -77,31 +79,102 @@ string fetch()
 }
 
 
+//dp
+int convertEndian(string data){
+
+	cout << data << endl;
+
+	long int num, b;
+	string newData;
+
+	//For 8 bit conversion
+	if(data.length() < 8){
+
+		newData = data;
+
+		if(data.length() != 8 && 8-data.length() > 0){
+			for(unsigned int i=0; i<(8-data.length()); i++){
+				newData = newData + "0";
+			}
+			cout << "8bit New Data: " << newData << endl;
+		}
+		else { newData = data; }
+
+		num = bitset<8>(newData).to_ulong();
+
+		b = num;
+	
+		b = ((b >> 1) & 0x55555555u) | ((b & 0x55555555u) << 1);
+	    	b = ((b >> 2) & 0x33333333u) | ((b & 0x33333333u) << 2);
+	    	b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
+	}
+	//For 32 bit conversion
+	else if(data.length() > 8){
+
+		newData = data;
+
+		if(data.length() != 32 && 32-data.length() > 0){
+			for(unsigned int i=0; i<(32-data.length()); i++){
+				newData = newData + "0";
+			}
+			cout << "32bit New Data: " << newData << endl;
+		}
+		else { newData = data; }
+
+		num = bitset<32>(newData).to_ulong();
+
+		b = num;
+	
+		b = ((b >> 1) & 0x55555555u) | ((b & 0x55555555u) << 1);
+    		b = ((b >> 2) & 0x33333333u) | ((b & 0x33333333u) << 2);
+    		b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
+    		b = ((b >> 8) & 0x00ff00ffu) | ((b & 0x00ff00ffu) << 8);
+    		b = ((b >> 16) & 0xffffu) | ((b & 0xffffu) << 16);
+	}
+	
+	cout << "Endian conversion from: " << newData << " To: " << b << endl;
+
+	return b;
+}
+
+//dp
+int getNumFromAddress(int address){
+	if(address == 0){ return 0; }
+
+	string num = convertEndian(store[address].getBinary());
+	int result = bitset<32>(num).to_ulong();
+	
+	cout << "Number at address " << address << " : " << result << " (" << store[address].getBinary() << ") " << endl;
+
+	return result;
+}
+
 //mf
 void decode(string current)
 {
 	string opCode = current.substr(14, 3);
 	string data = current.substr(0, 5);
+	long int convData = getNumFromAddress(convertEndian(data));
 
 	cout << endl << "opCode: " << opCode << endl;
-	cout << "data: " << data << endl;
+	cout << "data: " << convData << endl;
 
 	if(opCode == "000")
-		execute("JMP", binToInt(data));
+		execute("JMP", convData);
 	else if(opCode == "100")
-		execute("JRP", binToInt(data));
+		execute("JRP", convData);
 	else if(opCode == "010")
-		execute("LDN", binToInt(data));
+		execute("LDN", convData);
 	else if(opCode == "110")
-		execute("STO", binToInt(data));
+		execute("STO", convData);
 	else if(opCode == "001")
-		execute("SUB", binToInt(data));
+		execute("SUB", convData);
 	else if(opCode == "101")
-		execute("SUB", binToInt(data));
+		execute("SUB", convData);
 	else if(opCode == "011")
-		execute("CMP", binToInt(data));
+		execute("CMP", convData);
 	else if(opCode == "111")
-		execute("STP", binToInt(data));
+		execute("STP", convData);
 	else
 	{
 		cout << "Unable to read command. Exiting..." << endl;
@@ -132,17 +205,6 @@ string intToBin(int decimal)
 }
 
 
-// uint32_t LittleToBig()
-// {
-// 	uint32_t b = varNum;
-	
-// 	b = ((b >> 1) & 0x55555555u) | ((b & 0x55555555u) << 1);
-//     	b = ((b >> 2) & 0x33333333u) | ((b & 0x33333333u) << 2);
-//     	b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
-//     	b = ((b >> 8) & 0x00ff00ffu) | ((b & 0x00ff00ffu) << 8);
-//     	b = ((b >> 16) & 0xffffu) | ((b & 0xffffu) << 16);	
-// }
-
 //mm
 void execute(string opCode, int operand)
 {
@@ -156,7 +218,7 @@ void execute(string opCode, int operand)
 		int x = binToInt(c_Instruction.getBinary());
 		c_Instruction.setBinary(intToBin(x-operand));
 	}else if(opCode == "LDN"){	
-	cout << "Operand: " << operand << endl;	
+		cout << "Operand: " << operand << endl;	
 		accumulator.setBinary(intToBin(-(operand)));
 	}else if("STO"){
 		cout << "Operand: " << operand << endl;

@@ -6,3 +6,4 @@ void display();
 void init();
 long int binToInt(std::string);
 std::string intToBin(int);
+int convertEndian(std::string num);

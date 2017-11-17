@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <bitset>
+#include <stdlib.h>
 
 #include "assembler.h"
 #include "instruction.h"
@@ -10,13 +12,13 @@ using namespace std;
 Instruction accumulator;
 Instruction p_Instruction;
 Instruction c_Instruction;
-vector<Instruction> store(32);
+vector<Instruction> store;
 
 int main()
 {
 	init();
 	
-	for(int i=0; i < 10; i++)		//TODO: needs change based on file sizes
+	for(unsigned int i=0; i < store.size(); i++)	//TODO: needs change based on file sizes
 	{
 		increment_CI();
 		string current = fetch();
@@ -35,19 +37,19 @@ void init()
 	if(!file)
 	{
 		cout << "Unable to open file" << endl;
-		exit(1);
+		return;
 	}
 
-	int x = 0;
 	string line;
 	while(getline(file, line))
 	{
-		store[x].setBinary(line);
-		x++;
+		Instruction x;
+		x.setBinary(line);
+		store.push_back(x);
+
 	}
 
-
-	for (int j=0; j < 32; j++)
+	for(unsigned int j=0; j < store.size(); j++)
 	{
 		c_Instruction.setBinary("00000000000000000000000000000000");
 		p_Instruction.setBinary("00000000000000000000000000000000");
@@ -58,8 +60,11 @@ void init()
 //mm
 void increment_CI()
 {
-
+	int CI_decimal = binToInt(c_Instruction.getBinary());
+	CI_decimal++;
+	c_Instruction.setBinary(intToBin(CI_decimal));
 }
+
 
 //mf
 string fetch()
@@ -80,44 +85,74 @@ void decode(string current)
 	cout << "data: " << data << endl;
 
 	if(opCode == "000")
-		execute("JMP", 0);
+		execute("JMP", binToInt(data));
 	else if(opCode == "100")
-		execute("JRP", 0);
+		execute("JRP", binToInt(data));
 	else if(opCode == "010")
-		execute("LDN", 0);
+		execute("LDN", binToInt(data));
 	else if(opCode == "110")
-		execute("STO", 0);
+		execute("STO", binToInt(data));
 	else if(opCode == "001")
-		execute("SUB", 0);
+		execute("SUB", binToInt(data));
 	else if(opCode == "101")
-		execute("SUB", 0);
+		execute("SUB", binToInt(data));
 	else if(opCode == "011")
-		execute("CMP", 0);
+		execute("CMP", binToInt(data));
 	else if(opCode == "111")
-		execute("STP", 0);
+		execute("STP", binToInt(data));
 	else
 	{
 		cout << "Unable to read command. Exiting..." << endl;
-		exit(1);
+		return;
 	}
-
-
-
-	
 }
 
 //Converts a binary string to an int
 int binToInt(string binary)
 {
 	cout << "binToInt call..." << binary << endl;
-	return 0;
+	int decimal = bitset<32>(binary.c_str()).to_ulong();
+	cout << "Decimal return..." << decimal << endl;
+	return decimal;
+}
+
+//Converts an int to a binary string
+string intToBin(int decimal)
+{
+	cout << "intToBin call..." << decimal << endl;
+	string binary = bitset<32>(decimal).to_string();
+	cout << "Binary return..." << binary << endl;
+	return binary;
 }
 
 //mm
 void execute(string opCode, int operand)
 {
-	cout << "Opcode: " << opCode << endl;
-	cout << "Operand: " << operand << endl;
+
+	if(opCode == "JMP"){
+		//int CI_decimal = binToInt(c_Instruction.getBinary());
+		cout << "Operand: " << operand << endl;
+		c_Instruction.setBinary(intToBin(operand));
+	}else if(opCode == "JRP"){
+		cout << "Operand: " << operand << endl;
+		int x = binToInt(c_Instruction.getBinary());
+		c_Instruction.setBinary(intToBin(x-operand));
+	}else if(opCode == "LDN"){	
+	cout << "Operand: " << operand << endl;	
+		accumulator.setBinary(intToBin(-(operand)));
+	}else if("STO"){
+		cout << "Operand: " << operand << endl;
+		operand = binToInt(accumulator.getBinary());
+	}else if("SUB"){
+		cout << "Operand: " << operand << endl;
+		int x = binToInt(accumulator.getBinary());
+		accumulator.setBinary(intToBin(x-operand));
+	}else if("CMP"){
+		cout << "Operand: " << operand << endl;
+		if(binToInt(accumulator.getBinary()) < 0)
+			increment_CI();
+	}else if("STP")
+		exit(0);
 }
 
 void display()

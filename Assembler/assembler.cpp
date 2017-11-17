@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <bitset>
 #include <stdlib.h>
 
@@ -46,8 +47,8 @@ void init()
 		Instruction x;
 		x.setBinary(line);
 		store.push_back(x);
-
 	}
+
 
 	for(unsigned int j=0; j < store.size(); j++)
 	{
@@ -62,6 +63,7 @@ void increment_CI()
 {
 	int CI_decimal = binToInt(c_Instruction.getBinary());
 	CI_decimal++;
+	cout << "CI_decimal: " << CI_decimal << endl;
 	c_Instruction.setBinary(intToBin(CI_decimal));
 }
 
@@ -70,7 +72,7 @@ void increment_CI()
 string fetch()
 {
 	int CI_decimal = binToInt(c_Instruction.getBinary());
-	
+	cout << "...CI_decimal: " << CI_decimal << endl;
 	return store[CI_decimal].getBinary();
 }
 
@@ -108,10 +110,10 @@ void decode(string current)
 }
 
 //Converts a binary string to an int
-int binToInt(string binary)
+long int binToInt(string binary)
 {
 	cout << "binToInt call..." << binary << endl;
-	int decimal = bitset<32>(binary.c_str()).to_ulong();
+	long int decimal = bitset<32>(binary).to_ulong();
 	cout << "Decimal return..." << decimal << endl;
 	return decimal;
 }
@@ -120,10 +122,26 @@ int binToInt(string binary)
 string intToBin(int decimal)
 {
 	cout << "intToBin call..." << decimal << endl;
-	string binary = bitset<32>(decimal).to_string();
+	bitset<32>bin_x(decimal);
+	stringstream ss;
+	ss << bin_x;
+	string binary = ss.str();
+
 	cout << "Binary return..." << binary << endl;
 	return binary;
 }
+
+
+// uint32_t LittleToBig()
+// {
+// 	uint32_t b = varNum;
+	
+// 	b = ((b >> 1) & 0x55555555u) | ((b & 0x55555555u) << 1);
+//     	b = ((b >> 2) & 0x33333333u) | ((b & 0x33333333u) << 2);
+//     	b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
+//     	b = ((b >> 8) & 0x00ff00ffu) | ((b & 0x00ff00ffu) << 8);
+//     	b = ((b >> 16) & 0xffffu) | ((b & 0xffffu) << 16);	
+// }
 
 //mm
 void execute(string opCode, int operand)
@@ -158,11 +176,16 @@ void execute(string opCode, int operand)
 void display()
 {
    
-	int x=0;
-	while(store[x].getBinary() != "")
+	// int x=0;
+	// while(store[x].getBinary() != "")
+	// {
+	// 	cout << store[x].getBinary() << endl;
+	// 	x++;
+	// }
+
+	for(unsigned int i=0; i < store.size(); i++)
 	{
-		cout << store[x].getBinary() << endl;
-		x++;
+		cout << store[i].getBinary() << endl;
 	}
 	
 	cout << endl;

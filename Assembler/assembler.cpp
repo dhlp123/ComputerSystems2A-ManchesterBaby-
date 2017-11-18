@@ -20,14 +20,18 @@ int main()
 
 	init();
 	
-	for(unsigned int i=0; i < store.size(); i++)	//TODO: needs change based on file sizes
-	{
-		increment_CI();
-		string current = fetch();
-		decode(current);
-		//execute();				//called from decode
-		display();
-	}
+	int i;
+	cout << "Please enter an line for an address number" << endl;
+	cin >> i;
+	cout << getNumFromAddress(i) << endl;
+
+	//for(unsigned int i=0; i < store.size(); i++)	//TODO: needs change based on file sizes
+	//{
+	//	increment_CI();
+	//	string current = fetch();
+	//	decode(current);
+	//	display();
+	//}
 	
 	
 	return 0;
@@ -80,9 +84,9 @@ string fetch()
 
 
 //dp
-int convertEndian(string data){
+long int convertEndian(string data){
 
-	cout << data << endl;
+	cout << "Data Endian Converted: " << data << endl;
 
 	long int num, b;
 	string newData;
@@ -92,8 +96,9 @@ int convertEndian(string data){
 
 		newData = data;
 
-		if(data.length() != 8 && 8-data.length() > 0){
-			for(unsigned int i=0; i<(8-data.length()); i++){
+		if(data.length() != 8 && 9-data.length() > 0){
+			for(unsigned int i=0; i<(9-data.length()); i++){
+				cout << "8 Loop Running" << endl;
 				newData = newData + "0";
 			}
 			cout << "8bit New Data: " << newData << endl;
@@ -110,14 +115,21 @@ int convertEndian(string data){
 	}
 	//For 32 bit conversion
 	else if(data.length() > 8){
-
+		
 		newData = data;
-
-		if(data.length() != 32 && 32-data.length() > 0){
-			for(unsigned int i=0; i<(32-data.length()); i++){
+		
+		if(data.length() > 32){
+			for(unsigned int i=data.length(); i>32; i--){
+				cout << "32 Loop Running: " << (newData) << endl;
+				newData = newData.substr(0, newData.size()-1);
+			}
+		}
+		else if(data.length() != 32 && 32-data.length() > 0){
+			for(unsigned int i=0; i<(33-data.length()); i++){
+				cout << "32 Loop Running: " << (data) << endl;
 				newData = newData + "0";
 			}
-			cout << "32bit New Data: " << newData << endl;
+			cout << "32bit New Data: " << newData << "Length: " << newData.length() << endl;
 		}
 		else { newData = data; }
 
@@ -140,11 +152,18 @@ int convertEndian(string data){
 //dp
 int getNumFromAddress(int address){
 	if(address == 0){ return 0; }
+	
+	cout << "Address: " << address << endl;
+	cout << "Store Value Passed In: " << store[address].getBinary() << endl;
 
-	string num = convertEndian(store[address].getBinary());
+	int num = convertEndian(store[address].getBinary());
+
+	cout << "Endian Value Returned: " << num << endl;
+
 	int result = bitset<32>(num).to_ulong();
 	
-	cout << "Number at address " << address << " : " << result << " (" << store[address].getBinary() << ") " << endl;
+	cout << "Number at address " << address << " : " << result << endl;
+	cout << store[address].getBinary().length() << endl;
 
 	return result;
 }

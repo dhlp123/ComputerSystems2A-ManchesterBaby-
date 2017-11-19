@@ -23,7 +23,7 @@ void Instruction::setBinary(string line)
 	this->binary = line;
 }
 
-string Instruction::getBinary()
+std::string Instruction::getBinary()
 {
 	return this->binary;
 }

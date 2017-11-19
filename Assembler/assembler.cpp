@@ -14,24 +14,22 @@ Instruction accumulator;
 Instruction p_Instruction;
 Instruction c_Instruction;
 vector<Instruction> store;
+bool stop = false;
 
 int main()
 {
 
 	init();
-	
-	int i;
-	cout << "Please enter an line for an address number" << endl;
-	cin >> i;
-	cout << getNumFromAddress(i) << endl;
 
-	//for(unsigned int i=0; i < store.size(); i++)	//TODO: needs change based on file sizes
-	//{
-	//	increment_CI();
-	//	string current = fetch();
-	//	decode(current);
-	//	display();
-	//}
+	for(unsigned int i=0; i < store.size() && stop == false; i++)	//TODO: needs change based on file sizes
+	{
+		cout << "################# LINE: " << i+1 << endl;
+		string current = fetch();
+		decode(current);
+		display();
+		increment_CI();
+		cout << "################# LINE: " << i+1  << " ENDED"<< endl;
+	}
 	
 	
 	return 0;
@@ -50,6 +48,7 @@ void init()
 	while(getline(file, line))
 	{
 		Instruction x;
+		line.erase(line.find_last_not_of(" \n\r\t")+1);
 		x.setBinary(line);
 		store.push_back(x);
 	}
@@ -98,10 +97,10 @@ long int convertEndian(string data){
 
 		if(data.length() != 8 && 9-data.length() > 0){
 			for(unsigned int i=0; i<(9-data.length()); i++){
-				cout << "8 Loop Running" << endl;
+				//cout << "8 Loop Running" << endl;
 				newData = newData + "0";
 			}
-			cout << "8bit New Data: " << newData << endl;
+			//cout << "8bit New Data: " << newData << endl;
 		}
 		else { newData = data; }
 
@@ -120,13 +119,13 @@ long int convertEndian(string data){
 		
 		if(data.length() > 32){
 			for(unsigned int i=data.length(); i>32; i--){
-				cout << "32 Loop Running: " << (newData) << endl;
+				//cout << "32 Loop Running: " << (newData) << endl;
 				newData = newData.substr(0, newData.size()-1);
 			}
 		}
 		else if(data.length() != 32 && 32-data.length() > 0){
 			for(unsigned int i=0; i<(33-data.length()); i++){
-				cout << "32 Loop Running: " << (data) << endl;
+				//cout << "32 Loop Running: " << (data) << endl;
 				newData = newData + "0";
 			}
 			cout << "32bit New Data: " << newData << "Length: " << newData.length() << endl;
@@ -152,26 +151,29 @@ long int convertEndian(string data){
 //dp
 int getNumFromAddress(int address){
 	if(address == 0){ return 0; }
+	else{
+		address++;
+		cout << "Address: " << address << endl;
+		cout << "Store Value Passed In: " << store[address-1].getBinary() << endl;
+
+		int num = convertEndian(store[address-1].getBinary());
+
+		cout << "Endian Value Returned: " << num << endl;
+
+		int result = bitset<32>(num).to_ulong();
 	
-	cout << "Address: " << address << endl;
-	cout << "Store Value Passed In: " << store[address].getBinary() << endl;
+		cout << "Number at address " << address << " : " << result << endl;
+		cout << store[address-1].getBinary().length() << endl;
 
-	int num = convertEndian(store[address].getBinary());
-
-	cout << "Endian Value Returned: " << num << endl;
-
-	int result = bitset<32>(num).to_ulong();
-	
-	cout << "Number at address " << address << " : " << result << endl;
-	cout << store[address].getBinary().length() << endl;
-
-	return result;
+		return result;
+	}
+	return 0;
 }
 
 //mf
 void decode(string current)
 {
-	string opCode = current.substr(14, 3);
+	string opCode = current.substr(13, 3);
 	string data = current.substr(0, 5);
 	long int convData = getNumFromAddress(convertEndian(data));
 
@@ -192,8 +194,9 @@ void decode(string current)
 		execute("SUB", convData);
 	else if(opCode == "011")
 		execute("CMP", convData);
-	else if(opCode == "111")
+	else if(opCode == "111"){
 		execute("STP", convData);
+	}
 	else
 	{
 		cout << "Unable to read command. Exiting..." << endl;
@@ -204,22 +207,22 @@ void decode(string current)
 //Converts a binary string to an int
 long int binToInt(string binary)
 {
-	cout << "binToInt call..." << binary << endl;
+	//cout << "binToInt call..." << binary << endl;
 	long int decimal = bitset<32>(binary).to_ulong();
-	cout << "Decimal return..." << decimal << endl;
+	//cout << "Decimal return..." << decimal << endl;
 	return decimal;
 }
 
 //Converts an int to a binary string
 string intToBin(int decimal)
 {
-	cout << "intToBin call..." << decimal << endl;
+	//cout << "intToBin call..." << decimal << endl;
 	bitset<32>bin_x(decimal);
 	stringstream ss;
 	ss << bin_x;
 	string binary = ss.str();
 
-	cout << "Binary return..." << binary << endl;
+	//cout << "Binary return..." << binary << endl;
 	return binary;
 }
 
@@ -228,41 +231,72 @@ string intToBin(int decimal)
 void execute(string opCode, int operand)
 {
 
+
 	if(opCode == "JMP"){
-		//int CI_decimal = binToInt(c_Instruction.getBinary());
 		cout << "Operand: " << operand << endl;
+		cout << "Op Code: " << opCode << endl;
 		c_Instruction.setBinary(intToBin(operand));
 	}else if(opCode == "JRP"){
 		cout << "Operand: " << operand << endl;
+		cout << "Op Code: " << opCode << endl;
 		int x = binToInt(c_Instruction.getBinary());
 		c_Instruction.setBinary(intToBin(x-operand));
 	}else if(opCode == "LDN"){	
 		cout << "Operand: " << operand << endl;	
-		accumulator.setBinary(intToBin(-(operand)));
-	}else if("STO"){
+		cout << "Op Code: " << opCode << endl;
+		int x = -operand;
+		accumulator.setBinary(intToBin(x));
+	}else if(opCode == "STO"){
 		cout << "Operand: " << operand << endl;
-		operand = binToInt(accumulator.getBinary());
-	}else if("SUB"){
+		cout << "Op Code: " << opCode << endl;
+		
+		int i = findLine(operand);
+		cout << "Line found for: " << operand << " is: " << i << endl;
+		store[i].setBinary(accumulator.getBinary());
+		
+
+	}else if(opCode == "SUB"){
 		cout << "Operand: " << operand << endl;
+		cout << "Op Code: " << opCode << endl;
 		int x = binToInt(accumulator.getBinary());
 		accumulator.setBinary(intToBin(x-operand));
-	}else if("CMP"){
+	}else if(opCode == "CMP"){
 		cout << "Operand: " << operand << endl;
+		cout << "Op Code: " << opCode << endl;
 		if(binToInt(accumulator.getBinary()) < 0)
 			increment_CI();
-	}else if("STP")
-		exit(0);
+	}else if(opCode == "STP"){
+		stop = true;
+		return;
+	}
+	else{
+		cout << "Execution error: Opcode not recognised" << endl;
+		stop = true;
+		return;
+	}
 }
+
+//dp
+int findLine(int num){
+
+	int eNum = convertEndian(intToBin(num));
+	string bin = intToBin(eNum);
+
+
+	for(unsigned int i=0; i<store.size(); i++){
+
+		if( (bin) == (store[i].getBinary()) && i != 0){
+			cout << "i is " << i << endl;
+			return i;
+		}
+	}
+
+	return 0;
+}
+
 
 void display()
 {
-   
-	// int x=0;
-	// while(store[x].getBinary() != "")
-	// {
-	// 	cout << store[x].getBinary() << endl;
-	// 	x++;
-	// }
 
 	for(unsigned int i=0; i < store.size(); i++)
 	{

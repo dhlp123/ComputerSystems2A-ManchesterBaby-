@@ -8,3 +8,4 @@ long int binToInt(std::string);
 std::string intToBin(int);
 long int convertEndian(std::string num);
 int getNumFromAddress(int address);
+int findLine(int num);

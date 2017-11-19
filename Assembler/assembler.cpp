@@ -88,6 +88,7 @@ long int convertEndian(string data){
 	cout << "Data Endian Converted: " << data << endl;
 
 	long int num, b;
+
 	string newData;
 
 	//For 8 bit conversion
@@ -111,6 +112,7 @@ long int convertEndian(string data){
 		b = ((b >> 1) & 0x55555555u) | ((b & 0x55555555u) << 1);
 	    	b = ((b >> 2) & 0x33333333u) | ((b & 0x33333333u) << 2);
 	    	b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
+		
 	}
 	//For 32 bit conversion
 	else if(data.length() > 8){
@@ -132,6 +134,7 @@ long int convertEndian(string data){
 		}
 		else { newData = data; }
 
+		
 		num = bitset<32>(newData).to_ulong();
 
 		b = num;
@@ -141,10 +144,15 @@ long int convertEndian(string data){
     		b = ((b >> 4) & 0x0f0f0f0fu) | ((b & 0x0f0f0f0fu) << 4);
     		b = ((b >> 8) & 0x00ff00ffu) | ((b & 0x00ff00ffu) << 8);
     		b = ((b >> 16) & 0xffffu) | ((b & 0xffffu) << 16);
+
 	}
-	
+
 	cout << "Endian conversion from: " << newData << " To: " << b << endl;
 
+	//Checking for negatives
+	b = binToInt(intToBin(b));
+	
+	
 	return b;
 }
 
@@ -207,22 +215,27 @@ void decode(string current)
 //Converts a binary string to an int
 long int binToInt(string binary)
 {
-	//cout << "binToInt call..." << binary << endl;
-	long int decimal = bitset<32>(binary).to_ulong();
-	//cout << "Decimal return..." << decimal << endl;
+	long int decimal;
+
+	if(binary[0] == '1'){
+		decimal = (((long)bitset<32>(binary).to_ulong()));
+		cout << "Negative Binary: " << binary << endl;
+		cout << "Negative Decimal: " << (long) decimal << endl;
+	}
+	else{	
+		decimal = bitset<32>(binary).to_ulong();
+	}
 	return decimal;
 }
 
 //Converts an int to a binary string
 string intToBin(int decimal)
 {
-	//cout << "intToBin call..." << decimal << endl;
 	bitset<32>bin_x(decimal);
 	stringstream ss;
 	ss << bin_x;
 	string binary = ss.str();
 
-	//cout << "Binary return..." << binary << endl;
 	return binary;
 }
 
@@ -230,8 +243,6 @@ string intToBin(int decimal)
 //mm
 void execute(string opCode, int operand)
 {
-
-
 	if(opCode == "JMP"){
 		cout << "Operand: " << operand << endl;
 		cout << "Op Code: " << opCode << endl;
@@ -251,7 +262,6 @@ void execute(string opCode, int operand)
 		cout << "Op Code: " << opCode << endl;
 		
 		int i = findLine(operand);
-		cout << "Line found for: " << operand << " is: " << i << endl;
 		store[i].setBinary(accumulator.getBinary());
 		
 
@@ -259,6 +269,8 @@ void execute(string opCode, int operand)
 		cout << "Operand: " << operand << endl;
 		cout << "Op Code: " << opCode << endl;
 		int x = binToInt(accumulator.getBinary());
+		cout << "NEGATION VALUE::::::" << x << endl;
+		cout << "NEGATION SUM::::::" << x-operand << endl;
 		accumulator.setBinary(intToBin(x-operand));
 	}else if(opCode == "CMP"){
 		cout << "Operand: " << operand << endl;
@@ -302,11 +314,16 @@ void display()
 	{
 		cout << store[i].getBinary() << endl;
 	}
+
+	//cout << "NUM01: " << convertEndian(store[7].getBinary()) << endl;
+	//cout << "NUM02: " << convertEndian(store[8].getBinary()) << endl;
+	cout << "MYSUM: " << store[9].getBinary() << endl;
 	
 	cout << endl;
 	cout << "accumulator: " << accumulator.getBinary() << endl;
-	cout << "control insturction: " << c_Instruction.getBinary() << endl;
-	cout << "present insturction: " << p_Instruction.getBinary() << endl;
+	cout << "Accumulator Value: " << convertEndian(accumulator.getBinary()) << endl;
+	//cout << "control insturction: " << c_Instruction.getBinary() << endl;
+	//cout << "present insturction: " << p_Instruction.getBinary() << endl;
 
 	cout << endl << "data: " << p_Instruction.getData() << endl;
 	cout << "opcode: " << p_Instruction.getOpCode() << endl;

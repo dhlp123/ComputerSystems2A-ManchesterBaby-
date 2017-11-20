@@ -253,7 +253,7 @@ void translateBinaryToLine(string num, string opCode){
 //Takes the 32 bit line and writes it into a line of the output file for the compiled code.
 //If there is no file avaiable it should create one and write to it.
 void writeMachineCode(string line){
-	ofstream file("CompiledCode.txt", std::ios_base::app);
+	ofstream file("../Assembler/CompiledCode.txt", std::ios_base::app);
 
 	file << line << endl;
 

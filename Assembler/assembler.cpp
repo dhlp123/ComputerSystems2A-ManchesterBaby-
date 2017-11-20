@@ -21,7 +21,7 @@ int main()
 
 	init();
 
-	for(unsigned int i=0; i < store.size() && stop == false; i++)	//TODO: needs change based on file sizes
+	for(unsigned int i=0; i < store.size() && stop == false; i++)	
 	{
 		cout << endl;
 		cout << "LINE: " << i+1 << endl;
@@ -39,7 +39,7 @@ int main()
 
 void init()
 {
-	ifstream file("testfile");			//TODO: check how file will be read and modify accordingly
+	ifstream file("CompiledCode.txt");			
 	if(!file)
 	{
 		cout << "Unable to open file" << endl;
@@ -282,7 +282,6 @@ void display()
 	cout << endl;
 	cout << "Accumulator Binary: " << accumulator.getBinary() << endl;
 	cout << "Accumulator Value: " << binToInt(accumulator.getBinary()) << endl;
-	//cout << "control instruction: " << c_Instruction.getBinary() << endl;
-	//cout << "present instruction: " << p_Instruction.getBinary() << endl;
+
 }
 

@@ -2,9 +2,9 @@ CC = g++
 CFLAGS = -Wall -pedantic -Wextra 
 
 compile:
-	${CC} -o A2 ${CFLAGS} assembler.cpp
+	${CC} -o mb ${CFLAGS} assembler.cpp
 
 debug:
-	${CC} -o A2d -g ${CFLAGS} assembler.cpp
+	${CC} -o mbd -g ${CFLAGS} assembler.cpp
 clean:
-	rm -f A2
+	rm -f mb

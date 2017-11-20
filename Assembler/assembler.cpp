@@ -182,7 +182,7 @@ void decode(string current)
 {
 	string opCode = current.substr(13, 3);
 	string data = current.substr(0, 5);
-	int convData = getNumFromAddress(convertEndian(data));
+	int convData = (int) getNumFromAddress(convertEndian(data));
 
 	cout << endl << "opCode: " << opCode << endl;
 	cout << "data: " << convData << endl;
@@ -263,7 +263,7 @@ void execute(string opCode, int operand)
 		cout << "Op Code: " << opCode << endl;
 		
 		int i = findLine( (int) operand);
-		store[i].setBinary(accumulator.getBinary());
+		store[i].setBinary(intToBin(convertEndian(accumulator.getBinary())));
 		
 
 	}else if(opCode == "SUB"){
@@ -294,12 +294,13 @@ void execute(string opCode, int operand)
 int findLine(int num){
 
 	int eNum = convertEndian(intToBin( (int) num));
-	string bin = intToBin(eNum);
+	string bin = intToBin( (int) eNum);
 
 
 	for(unsigned int i=0; i<store.size(); i++){
 
 		if( (bin) == (store[i].getBinary()) && i != 0){
+			cout << bin << " : " << store[i].getBinary() << endl;
 			cout << "i is " << i << endl;
 			return i;
 		}

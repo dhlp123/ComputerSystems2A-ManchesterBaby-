@@ -5,7 +5,7 @@
 #include <bitset>
 #include <stdlib.h>
 
-#include "assembler.h"
+#include "hardware.h"
 #include "instruction.h"
 
 using namespace std;

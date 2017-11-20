@@ -13,11 +13,6 @@
 
 using namespace std;
 
-/** 
-
-NOTE: Since I have gotten the big endian conversion for the opCodes and Address numbers to work the only thing I have left to do is rewrite the conversion and reading methods to work with variable declaration and referencing.
-
-**/
 
 string opcode[] = {"JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"};
 string opcodeBinary[] = {"000", "100", "010", "110", "001", "101", "011", "111"};
